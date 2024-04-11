@@ -2,6 +2,7 @@ from selenium import webdriver
 import time
 from time import sleep
 from selenium.webdriver.common.by import By
+import pandas as pd
 
 # WebDriverのオプションを設定
 options = webdriver.ChromeOptions()
@@ -13,6 +14,7 @@ options.add_argument("--lang=ja")     # 言語設定を日本語に
 driver = webdriver.Chrome(options=options)
 
 HREFS = []
+d_list = []
 
 # URL開く
 driver.get("https://www.amazon.co.jp/ref=nav_logo")
@@ -45,4 +47,16 @@ for HREF in HREFS:
     # img
     img = driver.find_element(By.XPATH, '//div[@id="imgTagWrapperId"]/img').get_attribute("src")
     print("[INFO]  img :", img)
+
+    d={
+        'title':title,
+        'price':price,
+        'img':img,      
+        }
+    d_list.append(d)
+
+df=pd.DataFrame(d_list)
+df_URL = pd.DataFrame({'URL':HREFS})
+df_concat= pd.concat([df, df_URL], axis=1)
+df.to_csv("amazon_keybord.csv",encoding='utf-8-sig')
     
