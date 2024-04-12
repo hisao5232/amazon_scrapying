@@ -3,6 +3,12 @@ import time
 from time import sleep
 from selenium.webdriver.common.by import By
 import pandas as pd
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
+
+# wait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 # WebDriverのオプションを設定
 options = webdriver.ChromeOptions()
@@ -21,20 +27,31 @@ driver.get("https://www.amazon.co.jp/ref=nav_logo")
 # 待機処理
 # driver.implicitly_wait(10)
 sleep(10)
-#wait = WebDriverWait(driver=driver, timeout=60)
+wait = WebDriverWait(driver=driver, timeout=60)
  #検索窓 
 Word = "キーボード"
-driver.find_element(By.ID, "twotabsearchtextbox").send_keys(Word)
+#例外処理　検索窓のIDの違い
+try:
+    driver.find_element(By.ID, "twotabsearchtextbox").send_keys(Word)
+except:
+    driver.find_element(By.ID,"nav-bb-search").send_keys(Word)
+
 sleep(1)
 driver.find_element(By.ID,"nav-search-submit-button").click()
- #商品URLの取得 
+
+sleep(10)
+#while True:
+    #待機処理
+#    wait.until(EC.presence_of_all_elements_located)
+
+    #商品URLの取得 
 URLS = driver.find_elements(By.CSS_SELECTOR,"a.a-link-normal.s-no-outline")
 
 for URL in URLS:
     URL = URL.get_attribute("href")
     print("[INFO] URL :", URL)
     HREFS.append(URL)
-     #商品詳細の取得 
+    #商品詳細の取得 
 
 for HREF in HREFS:
     driver.get(HREF)
@@ -44,9 +61,22 @@ for HREF in HREFS:
     # price 
     price = driver.find_element(By.CSS_SELECTOR, 'div.aok-align-center > span > span > span.a-price-whole').text
     print("[INFO]  price :", price)
+    # 複数画像取得
+    images_btn = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
+    for index, image_btn in enumerate(images_btn, start=1):
+        # input要素を一つずつクリック
+        image_btn.click()
+        sleep(5)
+        wait.until(EC.presence_of_all_elements_located)
+        try:
+            img = driver.find_element(By.XPATH, f'(//div[@class="imgTagWrapper"]/img)[{index}]').get_attribute("src")
+            print("[INFO]  img :", img)
+        except NoSuchElementException:
+            pass
+    
     # img
-    img = driver.find_element(By.XPATH, '//div[@id="imgTagWrapperId"]/img').get_attribute("src")
-    print("[INFO]  img :", img)
+    #img = driver.find_element(By.XPATH, '//div[@id="imgTagWrapperId"]/img').get_attribute("src")
+    #print("[INFO]  img :", img)
 
     d={
         'title':title,
