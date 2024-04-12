@@ -56,7 +56,10 @@ for HREF in HREFS:
     d_list.append(d)
 
 df=pd.DataFrame(d_list)
+print(df)
 df_URL = pd.DataFrame({'URL':HREFS})
+print(df_URL)
 df_concat= pd.concat([df, df_URL], axis=1)
-df.to_csv("amazon_keybord.csv",encoding='utf-8-sig')
+print(df_concat)
+df_concat.to_excel("amazon_keybord.xlsx")
     
