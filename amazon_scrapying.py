@@ -29,7 +29,7 @@ driver.get("https://www.amazon.co.jp/ref=nav_logo")
 sleep(10)
 wait = WebDriverWait(driver=driver, timeout=60)
  #検索窓 
-Word = "キーボード"
+Word = "外付けハードディスク"
 #例外処理　検索窓のIDの違い
 try:
     driver.find_element(By.ID, "twotabsearchtextbox").send_keys(Word)
@@ -39,13 +39,26 @@ except:
 sleep(1)
 driver.find_element(By.ID,"nav-search-submit-button").click()
 
-sleep(10)
+#sleep(10)
 #while True:
     #待機処理
-#    wait.until(EC.presence_of_all_elements_located)
+wait.until(EC.presence_of_all_elements_located)
 
-    #商品URLの取得 
-URLS = driver.find_elements(By.CSS_SELECTOR,"a.a-link-normal.s-no-outline")
+    #商品URLの取得
+i=0
+while i < 5:
+    URLS = driver.find_elements(By.CSS_SELECTOR,"a.a-link-normal.s-no-outline")
+    for URL in URLS:
+        URL = URL.get_attribute("href")
+        print("[INFO] URL :", URL)
+        HREFS.append(URL)
+        #商品詳細の取得
+    driver.find_element(By.CSS_SELECTOR,"#search > div.s-desktop-width-max.s-desktop-content.s-opposite-dir.s-wide-grid-style.sg-row > div.sg-col-20-of-24.s-matching-dir.sg-col-16-of-20.sg-col.sg-col-8-of-12.sg-col-12-of-16 > div > span.rush-component.s-latency-cf-section > div.s-main-slot.s-result-list.s-search-results.sg-row > div:nth-child(78) > div > div > span > a.s-pagination-item.s-pagination-next.s-pagination-button.s-pagination-separator").click()
+    sleep(3)
+    i += 1
+print("Finish!!")
+
+"""URLS = driver.find_elements(By.CSS_SELECTOR,"a.a-link-normal.s-no-outline")
 
 for URL in URLS:
     URL = URL.get_attribute("href")
@@ -91,5 +104,5 @@ df_URL = pd.DataFrame({'URL':HREFS})
 print(df_URL)
 df_concat= pd.concat([df, df_URL], axis=1)
 print(df_concat)
-df_concat.to_excel("amazon_keybord.xlsx")
+df_concat.to_excel("amazon_keybord.xlsx")"""
     
