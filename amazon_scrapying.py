@@ -13,7 +13,6 @@ driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 options = webdriver.ChromeOptions()
 #options.add_argument("--headless")
-driver.get('https://www.google.com/imghp?hl=ja&tab=ri&ogbl')
 
 HREFS = []
 d_list = []
@@ -22,7 +21,7 @@ d_list = []
 driver.get("https://www.amazon.co.jp/ref=nav_logo")
 # 待機処理
 # driver.implicitly_wait(10)
-sleep(10)
+sleep(2)
 wait = WebDriverWait(driver=driver, timeout=60)
  #検索窓 
 Word = "外付けハードディスク"
@@ -35,14 +34,14 @@ except:
 sleep(1)
 driver.find_element(By.ID,"nav-search-submit-button").click()
 
-#sleep(10)
+sleep(2)
 #while True:
     #待機処理
-wait.until(EC.presence_of_all_elements_located)
+#wait.until(EC.presence_of_all_elements_located)
 
     #商品URLの取得
 counter = 1
-while counter < 10:
+while counter < 2:
     URLS = driver.find_elements(By.CSS_SELECTOR,"a.a-link-normal.s-no-outline")
     print("エレメント取得")
     for URL in URLS:
@@ -55,21 +54,38 @@ while counter < 10:
     print("next取得")
     next_URL = next.get_attribute("href")
     driver.get(next_URL)
-    sleep(5)
+    sleep(2)
     counter = counter + 1  
 print("Finish!!")
 
 for HREF in HREFS:
     driver.get(HREF)
+    sleep(10)
     # title
     title = driver.find_element(By.ID, "productTitle").text
-    #print("[INFO]  title :", title)
+    print("[INFO]  title :", title)
     # price 
-    price = driver.find_element(By.CSS_SELECTOR, 'div.aok-align-center > span > span > span.a-price-whole').text
-    #print("[INFO]  price :", price)
+    price = driver.find_element(By.ID, 'corePriceDisplay_desktop_feature_div').text
+    print("[INFO]  price :", price)
+
     # 複数画像取得
-    images_btn = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
-    for index, image_btn in enumerate(images_btn, start=1):
+    imgs=[]
+    i=1
+    images_btns = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
+    for images_btn in images_btns:
+        images_btn.click
+        img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
+        imgs.append(img)
+
+'''   
+    for images_btn in images_btns:
+        images_btn.click
+        sleep(1)
+        img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
+        print(img)
+        imgs.append(img)
+'''
+'''for index, image_btn in enumerate(images_btn, start=1):
         # input要素を一つずつクリック
         image_btn.click()
         sleep(5)
@@ -98,4 +114,4 @@ print(df_URL)
 df_concat= pd.concat([df, df_URL], axis=1)
 print(df_concat)
 df_concat.to_excel("amazon_keybord.xlsx")
-    
+'''    
