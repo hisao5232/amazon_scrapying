@@ -69,13 +69,15 @@ for HREF in HREFS:
     print("[INFO]  price :", price)
 
     # 複数画像取得
-    imgs=[]
-    i=1
+    f"imgs{j}"=[]
+
     images_btns = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
-    for images_btn in images_btns:
+    for i, images_btn in enumerate(images_btns, 1):
         images_btn.click
         img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
-        imgs.append(img)
+        img_d={i:img}
+        imgs.append(img_d)
+        print(imgs)
 
 '''   
     for images_btn in images_btns:
