@@ -9,6 +9,8 @@ from time import sleep
 import time
 import chromedriver_binary
 from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
+
 driver=webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 options = webdriver.ChromeOptions()
@@ -58,62 +60,45 @@ while counter < 2:
     counter = counter + 1  
 print("Finish!!")
 
-for HREF in HREFS:
+for HREF in HREFS[0:3]:
     driver.get(HREF)
-    sleep(10)
+    sleep(2)
     # title
     title = driver.find_element(By.ID, "productTitle").text
     print("[INFO]  title :", title)
     # price 
     price = driver.find_element(By.ID, 'corePriceDisplay_desktop_feature_div').text
     print("[INFO]  price :", price)
-
-    # 複数画像取得
-    f"imgs{j}"=[]
-
-    images_btns = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
-    for i, images_btn in enumerate(images_btns, 1):
-        images_btn.click
-        img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
-        img_d={i:img}
-        imgs.append(img_d)
-        print(imgs)
-
-'''   
-    for images_btn in images_btns:
-        images_btn.click
-        sleep(1)
-        img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
-        print(img)
-        imgs.append(img)
-'''
-'''for index, image_btn in enumerate(images_btn, start=1):
-        # input要素を一つずつクリック
-        image_btn.click()
-        sleep(5)
-        wait.until(EC.presence_of_all_elements_located)
-        try:
-            img = driver.find_element(By.XPATH, f'(//div[@class="imgTagWrapper"]/img)[{index}]').get_attribute("src")
-            print("[INFO]  img :", img)
-        except NoSuchElementException:
-            pass
-    
-    # img
-    #img = driver.find_element(By.XPATH, '//div[@id="imgTagWrapperId"]/img').get_attribute("src")
-    #print("[INFO]  img :", img)
-
     d={
         'title':title,
-        'price':price,
-        'img':img,      
+        'price':price,      
         }
     d_list.append(d)
 
+    # 複数画像取得
+    d_img_list=[]
+    images_btn = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
+    for index, image_btn in enumerate(images_btn, start=1):
+        # input要素を一つずつクリック
+        image_btn.click()
+        sleep(2)
+        wait.until(EC.presence_of_all_elements_located)
+        try:
+            #img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
+            img = driver.find_element(By.XPATH, f'(//div[@class="imgTagWrapper"]/img)[{index}]').get_attribute("src")
+            print("[INFO]  img :", img)
+            d_img={'picture':img}
+            print('picture取得')
+            d_img_list.append(d_img)
+        except NoSuchElementException:
+            pass
+
 df=pd.DataFrame(d_list)
 print(df)
-df_URL = pd.DataFrame({'URL':HREFS})
+df_URL = pd.DataFrame({'URL':HREFS[0:3]})
 print(df_URL)
+df_img=pd.DataFrame(d_img_list)
 df_concat= pd.concat([df, df_URL], axis=1)
 print(df_concat)
-df_concat.to_excel("amazon_keybord.xlsx")
-'''    
+df_concat_2=pd.concat([df_concat,df_img], axis=1)
+df_concat_2.to_excel("amazon_deta_2.xlsx")
