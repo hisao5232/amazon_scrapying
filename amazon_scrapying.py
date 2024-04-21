@@ -62,7 +62,7 @@ print("Finish!!")
 
 for HREF in HREFS[0:3]:
     driver.get(HREF)
-    sleep(2)
+    sleep(1)
     # title
     title = driver.find_element(By.ID, "productTitle").text
     print("[INFO]  title :", title)
@@ -77,6 +77,7 @@ for HREF in HREFS[0:3]:
 
     # 複数画像取得
     d_img_list=[]
+    d_img_dict={}
     images_btn = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
     for index, image_btn in enumerate(images_btn, start=1):
         # input要素を一つずつクリック
@@ -86,19 +87,17 @@ for HREF in HREFS[0:3]:
         try:
             #img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
             img = driver.find_element(By.XPATH, f'(//div[@class="imgTagWrapper"]/img)[{index}]').get_attribute("src")
-            print("[INFO]  img :", img)
-            d_img={'picture':img}
-            print('picture取得')
-            d_img_list.append(d_img)
-        except NoSuchElementException:
+            d_img={f'picture_{index}':img}
+            d_img_dict.append(d_img)
+            
+        except:
             pass
-
+    print(d_img_dict)
+    d_img_list.append(d_img_dict)
 df=pd.DataFrame(d_list)
-print(df)
 df_URL = pd.DataFrame({'URL':HREFS[0:3]})
-print(df_URL)
 df_img=pd.DataFrame(d_img_list)
+print(df_img)
 df_concat= pd.concat([df, df_URL], axis=1)
-print(df_concat)
 df_concat_2=pd.concat([df_concat,df_img], axis=1)
-df_concat_2.to_excel("amazon_deta_2.xlsx")
+df_concat_2.to_excel("amazon_deta_6.xlsx")
