@@ -94,7 +94,7 @@ for HREF in HREFS[0:3]:
             pass
     d_img_list.append(d_img)
     print(d_img_list)
-    d_img.clear
+    d_img.clear()
 
 df=pd.DataFrame(d_list)
 df_URL = pd.DataFrame({'URL':HREFS[0:3]})
