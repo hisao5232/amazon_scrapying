@@ -92,9 +92,18 @@ for HREF in HREFS[0:3]:
             
         except:
             pass
+　　 picture_1=d_img['picture_1']
+     picture_2=d_img['picture_2']
+     picture_3=d_img['picture_3']
+     picture_4=d_img['picture_4']
+     picture_5=d_img['picture_5']
+     picture_6=d_img['picture_6']
+     d_img_d={
+　　　　　　    'picture_1':picture_1,
+
+
     d_img_list.append(d_img)
     print(d_img_list)
-    d_img.clear()
 
 df=pd.DataFrame(d_list)
 df_URL = pd.DataFrame({'URL':HREFS[0:3]})
