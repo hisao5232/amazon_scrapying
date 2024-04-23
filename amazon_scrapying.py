@@ -18,6 +18,8 @@ options = webdriver.ChromeOptions()
 
 HREFS = []
 d_list = []
+d_img_list=[]
+d_img={}
 
 # URL開く
 driver.get("https://www.amazon.co.jp/ref=nav_logo")
@@ -52,7 +54,7 @@ while counter < 2:
         HREFS.append(URL)
     wait.until(EC.presence_of_all_elements_located)
     print(f"URL取得{counter}")
-    next=driver.find_element(By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[1]/div/span[1]/div[1]/div[69]/div/div/span/a[3]")
+    next=driver.find_element(By.XPATH,"/html/body/div[1]/div[1]/div[1]/div[1]/div/span[1]/div[1]/div[68]/div/div/span/a[3]")
     print("next取得")
     next_URL = next.get_attribute("href")
     driver.get(next_URL)
@@ -76,8 +78,6 @@ for HREF in HREFS[0:3]:
     d_list.append(d)
 
     # 複数画像取得
-    d_img_list=[]
-    d_img_dict={}
     images_btn = driver.find_elements(By.CSS_SELECTOR, "li.a-spacing-small.item.imageThumbnail.a-declarative > span > span > span > input")
     for index, image_btn in enumerate(images_btn, start=1):
         # input要素を一つずつクリック
@@ -85,19 +85,36 @@ for HREF in HREFS[0:3]:
         sleep(2)
         wait.until(EC.presence_of_all_elements_located)
         try:
-            #img=driver.find_element(By.CLASS_NAME, "a-dynamic-image").get_attribute("src")
             img = driver.find_element(By.XPATH, f'(//div[@class="imgTagWrapper"]/img)[{index}]').get_attribute("src")
-            d_img={f'picture_{index}':img}
-            d_img_dict.append(d_img)
+            d_img[f'picture_{index}']=img
+            print(d_img)
             
         except:
             pass
-    print(d_img_dict)
-    d_img_list.append(d_img_dict)
+    
+    try:
+        picture_1 = d_img.pop("picture_1")
+        picture_2 = d_img.pop("picture_2")
+        picture_3 = d_img.pop("picture_3")
+        picture_4 = d_img.pop("picture_4")
+        picture_5 = d_img.pop("picture_5")
+        picture_6 = d_img.pop("picture_6")
+    except:
+        pass
+    
+    d_img_d={
+             'picture_1':picture_1,
+             'picture_2':picture_2,
+             'picture_3':picture_3,
+             'picture_4':picture_4,
+             'picture_5':picture_5,
+             'picture_6':picture_6,
+             }
+    d_img_list.append(d_img_d)
+
 df=pd.DataFrame(d_list)
 df_URL = pd.DataFrame({'URL':HREFS[0:3]})
 df_img=pd.DataFrame(d_img_list)
-print(df_img)
 df_concat= pd.concat([df, df_URL], axis=1)
 df_concat_2=pd.concat([df_concat,df_img], axis=1)
-df_concat_2.to_excel("amazon_deta_6.xlsx")
+df_concat_2.to_excel("amazon_deta.xlsx")
